@@ -1,0 +1,233 @@
+openapi: 3.0.0
+info:
+  title: Inspection System API
+  version: 1.1.0
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /auth/login:
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Successful login
+  /auth/recover-password:
+    post:
+      summary: Recover user password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Password recovery email sent
+  /clients:
+    post:
+      summary: Register a new client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                inn:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Client registered
+  /clients/trial:
+    post:
+      summary: Start a trial subscription
+      responses:
+        '200':
+          description: Trial activated
+  /licenses:
+    get:
+      summary: Get available licenses
+      responses:
+        '200':
+          description: List of licenses
+    post:
+      summary: Purchase a license
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                licenseType:
+                  type: string
+                paymentMethod:
+                  type: string
+      responses:
+        '201':
+          description: License purchased
+  /users:
+    get:
+      summary: Get users list
+      responses:
+        '200':
+          description: List of users
+  /users/{userId}/role:
+    put:
+      summary: Update user role
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+      responses:
+        '200':
+          description: Role updated
+  /users/{userId}:
+    delete:
+      summary: Delete a user account
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User deleted
+  /users/sub-account:
+    post:
+      summary: Admin registers a sub-account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                role:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Sub-account created
+  /cameras:
+    post:
+      summary: Add a new camera
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                ip:
+                  type: string
+      responses:
+        '201':
+          description: Camera added
+  /inspections:
+    post:
+      summary: Submit an inspection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                metadata:
+                  type: object
+      responses:
+        '200':
+          description: Inspection submitted
+  /defects:
+    get:
+      summary: Get detected defects
+      responses:
+        '200':
+          description: List of defects
+  /ai/config:
+    put:
+      summary: Update AI defect sensitivity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sensitivity:
+                  type: object
+      responses:
+        '200':
+          description: AI settings updated
+  /analytics/export:
+    get:
+      summary: Export analytics data
+      parameters:
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - pdf
+              - excel
+      responses:
+        '200':
+          description: Exported analytics file
+  /payments:
+    post:
+      summary: Add a payment method
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentType:
+                  type: string
+                details:
+                  type: object
+      responses:
+        '201':
+          description: Payment method added
