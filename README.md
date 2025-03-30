@@ -30,3 +30,14 @@
 
 ### Видео
 * [Аттестация №1: видеопрезентация](https://drive.google.com/file/d/1nNROvPLneUcozsotntAM1RbKcGwrNE4F/view?usp=sharing)
+
+### Чек листы
+1. [Этап №1](https://github.com/I-want-pizza/QWality/blob/db488a1e794473a015df8cb8fc7b1416ed381151/docs/teams_score/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82_1_%D1%8D%D1%82%D0%B0%D0%BF.pdf)
+
+### Проверки от других команд
+1. Этап №1
+   1. [4.2](https://github.com/PublicTransport2025/Docs/blob/fbb74c83b6bf19c2cb6bf589e1f57e42ac8b27f7/%D0%9A%D1%80%D0%BE%D1%81%D1%81-%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B8.pdf)
+   2. [6.3](https://github.com/VisualMusic-VSU/visualmusic/blob/a6c438b225510fb7d536fbe62bfc43634c211a95/docs/check/check.pdf)
+   3. [6.4](https://github.com/Mixing-Visionary/Docs/tree/docs-deploy)
+   4. [7.2](https://github.com/ReflectAppTP)
+   5. [4.2 спец](https://github.com/anya-ananasss/Defense-Discover/blob/e4148093c9d5a3fa4783a530bdceec1cf8eeb704/Documentation/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%20(%D0%A1%D0%9A%2C%202%20%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B0).pdf)
