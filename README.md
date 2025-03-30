@@ -26,6 +26,7 @@
    * Техническое задание [pdf](https://github.com/I-want-pizza/QWality/blob/69026fc8c1f3b4346c311a59eac22d9166535cd5/docs/%D0%A2%D0%B5%D1%85%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5%20%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5.pdf) [docx](https://github.com/I-want-pizza/QWality/blob/69026fc8c1f3b4346c311a59eac22d9166535cd5/docs/%D0%A2%D0%B5%D1%85%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5%20%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5.docx)
    * Презентация 1 этапа [pdf](https://github.com/I-want-pizza/QWality/blob/d6bc2448f6cf04a8195fa6485fbbe7ad2122afff/docs/pptx/1_att_presentation.pdf) [pptx](https://github.com/I-want-pizza/QWality/blob/d6bc2448f6cf04a8195fa6485fbbe7ad2122afff/docs/pptx/1_att_presentation.pptx)
    * Брендбук [pdf](https://github.com/I-want-pizza/QWality/blob/627db6d5be1fd345d40b93b71e92f04592e38536/docs/%D0%91%D1%80%D0%B5%D0%BD%D0%B4%D0%B1%D1%83%D0%BA.pdf)
+   * Правила коммитов [md](https://github.com/I-want-pizza/QWality/blob/64abc93704140a2072a63c06e43befc4695cb982/docs/git/rules.md)
 
 ### Видео
 * [Аттестация №1: видеопрезентация](https://drive.google.com/file/d/1nNROvPLneUcozsotntAM1RbKcGwrNE4F/view?usp=sharing)
