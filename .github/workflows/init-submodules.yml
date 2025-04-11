@@ -1,0 +1,11 @@
+name: Init Submodules
+on: [push]
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Show Submodules
+        run: git submodule status        
