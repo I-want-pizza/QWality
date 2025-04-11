@@ -1,9 +1,9 @@
 [submodule "backend"]
-  path = backend
-  url = https://github.com/Grotri/QWalityBackend
+	path = backend
+	url = https://github.com/Grotri/QWalityBackend
 [submodule "frontend"]
-  path = frontend
-  url = https://github.com/Grotri/QWalityFrontend
+	path = frontend
+	url = https://github.com/Grotri/QWalityFrontend
 [submodule "ml"]
-  path = ml
-  url = https://github.com/Grotri/QWalityML
+	path = ml
+	url = https://github.com/Grotri/QWalityML
