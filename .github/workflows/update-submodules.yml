@@ -1,8 +1,8 @@
 name: Update Submodules
 on:
   schedule:
-    - cron: '0 0 * * *'  # Каждый день в 00:00 (UTC)
-  workflow_dispatch:     # Ручной запуск через UI GitHub
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   update:
@@ -12,7 +12,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.GH_TOKEN }}  # Ключевой момент!
 
       - name: Update submodules
         run: |
@@ -22,7 +21,7 @@ jobs:
           git add .
           
           # Проверяем, есть ли изменения
-          if [[ $(git status --porcelain) ]]; then
+          if [[ -n $(git status --porcelain) ]]; then
             git commit -m "chore(submodules): auto-update"
             git push
           else
