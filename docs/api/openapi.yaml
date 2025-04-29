@@ -22,9 +22,9 @@ paths:
       responses:
         '200':
           description: Successful login
-  /auth/recover-password:
+  /auth/reset-password-request:
     post:
-      summary: Recover user password
+      summary: Запрос на восстановление пароля
       requestBody:
         required: true
         content:
@@ -36,10 +36,12 @@ paths:
                   type: string
       responses:
         '200':
-          description: Password recovery email sent
-  /clients:
+          description: Письмо отправлено
+        '400':
+          description: Ошибка обработки запроса
+  /auth/reset-password-confirm:
     post:
-      summary: Register a new client
+      summary: Подтверждение восстановления пароля
       requestBody:
         required: true
         content:
@@ -47,15 +49,41 @@ paths:
             schema:
               type: object
               properties:
-                inn:
-                  type: string
-                email:
+                token:
                   type: string
                 password:
                   type: string
       responses:
+        '200':
+          description: Пароль обновлён
+        '400':
+          description: Неверный или просроченный токен
+  /clients:
+    post:
+      summary: Регистрация нового клиента
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                tin:
+                  type: string
+                type:
+                  type: string
+                  enum: [ "legal person", "individual" ]
+      responses:
         '201':
-          description: Client registered
+          description: Клиент успешно зарегистрирован
+        '400':
+          description: Ошибка регистрации
+        '409':
+          description: Клиент с таким email или ИНН уже существует
   /clients/trial:
     post:
       summary: Start a trial subscription
@@ -214,9 +242,11 @@ paths:
       responses:
         '200':
           description: Exported analytics file
-  /payments:
+  /payments/create-session:
     post:
-      summary: Add a payment method
+      summary: Создание сессии оплаты
+      security:
+        - bearerAuth: [ ]
       requestBody:
         required: true
         content:
@@ -224,10 +254,44 @@ paths:
             schema:
               type: object
               properties:
-                paymentType:
-                  type: string
-                details:
-                  type: object
+                tariff_id:
+                  type: integer
       responses:
         '201':
-          description: Payment method added
+          description: Ссылка на оплату создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payment_url:
+                    type: string
+                  amount:
+                    type: integer
+        '403':
+          description: Доступ только для владельца
+        '400':
+          description: Ошибка создания платежа
+  /payments/webhook:
+    post:
+      summary: Обработка уведомления об оплате от FreeKassa
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                MERCHANT_ID:
+                  type: string
+                AMOUNT:
+                  type: string
+                MERCHANT_ORDER_ID:
+                  type: string
+                SIGN:
+                  type: string
+      responses:
+        '200':
+          description: Успешно обработано (ожидается ответ YES)
+        '400':
+          description: Ошибка проверки подписи или данных
