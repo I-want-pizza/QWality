@@ -171,6 +171,18 @@ paths:
         '201':
           description: Sub-account created
   /cameras:
+    get:
+      summary: Получить список камер
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [ "active", "inactive", "deleted" ]
+      responses:
+        '200':
+          description: Список камер
     post:
       summary: Add a new camera
       requestBody:
@@ -189,6 +201,30 @@ paths:
       responses:
         '201':
           description: Camera added
+  /cameras/{id}/status:
+    patch:
+      summary: Изменить статус камеры
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [ "active", "inactive", "deleted" ]
+      responses:
+        '200':
+          description: Статус обновлён
+        '404':
+          description: Камера не найдена
+  /cameras/{id}:
+    delete:
+      summary: Удалить (пометить как удалённую) камеру
+      responses:
+        '200':
+          description: Камера помечена как удалённая
   /inspections:
     post:
       summary: Submit an inspection
