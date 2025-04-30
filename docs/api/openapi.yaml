@@ -272,12 +272,18 @@ paths:
           required: true
           schema:
             type: string
-            enum:
-              - pdf
-              - excel
+            enum: [ "pdf", "excel" ]
       responses:
         '200':
-          description: Exported analytics file
+          description: Экспортированный файл
+  /analytics/summary:
+    get:
+      summary: Получить статистику клиента
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Сводная статистика
   /payments/create-session:
     post:
       summary: Создание сессии оплаты
