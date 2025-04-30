@@ -227,18 +227,19 @@ paths:
           description: Камера помечена как удалённая
   /inspections:
     post:
-      summary: Submit an inspection
+      summary: Провести инспекцию
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
+                product_id:
+                  type: integer
                 image:
                   type: string
-                metadata:
-                  type: object
+                  format: binary
       responses:
         '200':
           description: Inspection submitted
