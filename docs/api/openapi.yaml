@@ -39,6 +39,37 @@ paths:
           description: Письмо отправлено
         '400':
           description: Ошибка обработки запроса
+  /auth/refresh:
+    post:
+      summary: Обновление JWT токена
+      description: Эндпоинт для обновления access токена с использованием refresh токена
+      tags:
+        - Аутентификация
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Успешное обновление токена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: Новый JWT access токен
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ItCY0LLQsNC9INCf0LXRgtGA0L7QsiIsImlhdCI6MTUxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: "Token has expired"
   /auth/reset-password-confirm:
     post:
       summary: Подтверждение восстановления пароля
@@ -84,12 +115,6 @@ paths:
           description: Ошибка регистрации
         '409':
           description: Клиент с таким email или ИНН уже существует
-  /clients/trial:
-    post:
-      summary: Start a trial subscription
-      responses:
-        '200':
-          description: Trial activated
   /licenses:
     get:
       summary: Get available licenses
@@ -119,7 +144,7 @@ paths:
         '200':
           description: List of users
   /users/{userId}/role:
-    put:
+    patch:
       summary: Update user role
       parameters:
         - name: userId
@@ -136,6 +161,7 @@ paths:
               properties:
                 role:
                   type: string
+                  enum: [ "admin", "moderator", "user" ]
       responses:
         '200':
           description: Role updated
@@ -163,10 +189,15 @@ paths:
               properties:
                 email:
                   type: string
-                role:
-                  type: string
                 password:
                   type: string
+                role:
+                  type: string
+                color_theme:
+                  type: string
+                  enum: [ "light", "dark" ]
+                font_size:
+                  type: integer
       responses:
         '201':
           description: Sub-account created
@@ -194,9 +225,7 @@ paths:
               properties:
                 name:
                   type: string
-                type:
-                  type: string
-                ip:
+                camera_url:
                   type: string
       responses:
         '201':
@@ -228,21 +257,61 @@ paths:
   /inspections:
     post:
       summary: Провести инспекцию
+      description: Эндпоинт для создания новой инспекции с загрузкой изображения
+      tags:
+        - Инспекции
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
               type: object
+              required:
+                - batch_number
+                - inspected_at
+                - camera_name
+                - image
               properties:
-                product_id:
-                  type: integer
+                batch_number:
+                  type: string
+                  description: Номер партии
+                  example: "BATCH-001"
+                inspected_at:
+                  type: string
+                  format: date-time
+                  description: Дата и время проведения инспекции
+                  example: "2025-04-29T15:45:00"
+                camera_name:
+                  type: string
+                  description: Название камеры
+                  example: "Main Entrance Camera"
                 image:
                   type: string
                   format: binary
+                  description: Изображение для инспекции
       responses:
         '200':
-          description: Inspection submitted
+          description: Инспекция успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Сообщение об успешной операции
+                    example: "Inspection submitted"
+        '400':
+          description: Ошибка при создании инспекции
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Описание ошибки
+                    example: "Invalid image format"
   /defects:
     get:
       summary: Get detected defects
