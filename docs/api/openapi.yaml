@@ -7,21 +7,57 @@ servers:
 paths:
   /auth/login:
     post:
-      summary: User login
+      summary: Вход пользователя
+      description: Эндпоинт для аутентификации пользователя и получения JWT токенов
+      tags:
+        - Аутентификация
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - email
+                - password
               properties:
                 email:
                   type: string
+                  format: email
+                  description: Email пользователя
+                  example: "user@example.com"
                 password:
                   type: string
+                  format: password
+                  description: Пароль пользователя
+                  example: "secure_password123"
       responses:
         '200':
-          description: Successful login
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: JWT access токен
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ItCY0LLQsNC9INCf0LXRgtGA0L7QsiIsImlhdCI6MTUxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                  refresh_token:
+                    type: string
+                    description: JWT refresh токен для обновления access токена
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ItCY0LLQsNC9INCf0LXRgtGA0L7QsiIsImlhdCI6MTUxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: "Invalid credentials"
   /auth/reset-password-request:
     post:
       summary: Запрос на восстановление пароля
@@ -92,29 +128,74 @@ paths:
   /clients:
     post:
       summary: Регистрация нового клиента
+      description: Эндпоинт для регистрации нового клиента и создания пользователя с ролью owner
+      tags:
+        - Клиенты
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - email
+                - password
+                - tin
+                - type
               properties:
                 email:
                   type: string
+                  format: email
+                  description: Email клиента и владельца
+                  example: "company@example.com"
                 password:
                   type: string
+                  format: password
+                  description: Пароль для создаваемого пользователя-владельца
+                  example: "secure_password123"
                 tin:
                   type: string
+                  description: ИНН клиента
+                  example: "7712345678"
                 type:
                   type: string
                   enum: [ "legal person", "individual" ]
+                  description: Тип клиента (юридическое или физическое лицо)
+                  example: "legal person"
       responses:
         '201':
           description: Клиент успешно зарегистрирован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Сообщение об успешной регистрации
+                    example: "Клиент зарегистрирован"
         '400':
-          description: Ошибка регистрации
+          description: Ошибка при регистрации клиента
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Описание ошибки
+                    example: "Invalid client data"
         '409':
           description: Клиент с таким email или ИНН уже существует
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение о конфликте
+                    example: "Client with this email already exists"
   /licenses:
     get:
       summary: Get available licenses
