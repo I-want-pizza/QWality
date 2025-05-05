@@ -116,15 +116,19 @@ paths:
             schema:
               type: object
               properties:
-                token:
+                email:
                   type: string
                 password:
                   type: string
+                code:
+                  type: string
+                  minLength: 6
+                  maxLength: 6
       responses:
         '200':
           description: Пароль обновлён
         '400':
-          description: Неверный или просроченный токен
+          description: Неверный код
   /clients:
     post:
       summary: Регистрация нового клиента
@@ -142,6 +146,7 @@ paths:
                 - password
                 - tin
                 - type
+                - сode
               properties:
                 email:
                   type: string
@@ -162,6 +167,12 @@ paths:
                   enum: [ "legal person", "individual" ]
                   description: Тип клиента (юридическое или физическое лицо)
                   example: "legal person"
+                code:
+                  type: string
+                  minLength: 6
+                  maxLength: 6
+                  description: Код подтверждения с электронной почты
+                  example: "412874"
       responses:
         '201':
           description: Клиент успешно зарегистрирован
@@ -186,7 +197,7 @@ paths:
                     description: Описание ошибки
                     example: "Invalid client data"
         '409':
-          description: Клиент с таким email или ИНН уже существует
+          description: Клиент с таким email или ИНН уже существует или неправильный код подтверждения
           content:
             application/json:
               schema:
@@ -194,8 +205,8 @@ paths:
                 properties:
                   error:
                     type: string
-                    description: Сообщение о конфликте
-                    example: "Client with this email already exists"
+                    description: Сообщение об ошибке
+                    example: "Invalid or expired verification code"
   /licenses:
     get:
       summary: Get available licenses
