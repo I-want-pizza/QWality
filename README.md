@@ -47,8 +47,8 @@
    4. [Группа 7 команда 2](https://github.com/ReflectAppTP)
    5. [Группа 4 Спец. комада 2](https://github.com/anya-ananasss/Defense-Discover/blob/e4148093c9d5a3fa4783a530bdceec1cf8eeb704/Documentation/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%20(%D0%A1%D0%9A%2C%202%20%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B0).pdf)
 2. Этап №2
-    1. [Группа 4 команда 1](https://github.com/PublicTransport2025)
-    2. [Группа 6 команда 3](https://github.com/VisualMusic-VSU)
-    3. [Группа 6 команда 4](https://github.com/Mixing-Visionary)
-    4. [Группа 4 Спец. комада 2](https://github.com/anya-ananasss/Defense-Discover)
+    1. [Группа 4 команда 1](https://github.com/PublicTransport2025/Docs/blob/main/%D0%AD%D1%82%D0%B0%D0%BF%20MVP/%D0%A2%D1%80%D0%B0%D0%BD%D1%81%D0%BF%D0%BE%D1%80%D1%82%202025%20%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%202%20%D1%8D%D1%82%D0%B0%D0%BF.pdf)
+    2. [Группа 6 команда 3](https://github.com/VisualMusic-VSU/visualmusic/blob/01cb8b9de5e05847dc50411903870fbc9e0d3b11/docs/check/second-stage-check.pdf)
+    3. [Группа 6 команда 4](https://github.com/Mixing-Visionary/Docs/blob/f5c0a90af022a83e3e553d3d50b6f7f3a1ebf6fa/CheckList/Checklist_2.pdf)
+    4. [Группа 4 Спец. комада 2](https://github.com/anya-ananasss/Defense-Discover/blob/main/Documentation/%D0%A2%D0%9F.%20%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%202%20%D1%8D%D1%82%D0%B0%D0%BF.pdf)
     4. [Группа 5 Спец. комада 3](https://github.com/intrafellow/TechTrackInvest)
