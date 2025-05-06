@@ -27,7 +27,7 @@
 * Брендбук [pdf](https://github.com/I-want-pizza/QWality/blob/627db6d5be1fd345d40b93b71e92f04592e38536/docs/%D0%91%D1%80%D0%B5%D0%BD%D0%B4%D0%B1%D1%83%D0%BA.pdf)
 * Правила коммитов [md](https://github.com/I-want-pizza/QWality/blob/64abc93704140a2072a63c06e43befc4695cb982/docs/git/rules.md)
 * Тестирование:  [Тест-план.pdf](????) \ [Тест-кейсы.pdf](????)
-* Презентация 2 этапа [Google Presentations](https://docs.google.com/presentation/d/1p-WR1LU2WyGILe2ECDQ_J-1F6IWB20V2gelepvK6XqE/edit?usp=sharing) [pdf]() [pptx]()
+* Презентация 2 этапа [Google Presentations](https://docs.google.com/presentation/d/1p-WR1LU2WyGILe2ECDQ_J-1F6IWB20V2gelepvK6XqE/edit?usp=sharing) [pdf](https://github.com/I-want-pizza/QWality/blob/a4a89432033959a738b6f7a08f3fb7fb921581a7/docs/pptx/2_att_presentation.pdf) [pptx](https://github.com/I-want-pizza/QWality/blob/a4a89432033959a738b6f7a08f3fb7fb921581a7/docs/pptx/2_att_presentation.pptx)
 * Ссылки на CI/CD: [Frontend](https://github.com/Grotri/QWalityWeb/actions/workflows/firebase-hosting-merge.yml) \ [Backend](???) 
 * Отчёты ПМ [Папка](https://github.com/I-want-pizza/QWality/tree/main/docs/pm)
 
