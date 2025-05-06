@@ -37,9 +37,9 @@
 
 ### Чек листы
 1. [Этап №1](https://github.com/I-want-pizza/QWality/blob/db488a1e794473a015df8cb8fc7b1416ed381151/docs/teams_score/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82_1_%D1%8D%D1%82%D0%B0%D0%BF.pdf)
-2. [Этап №2](????)
+2. [Этап №2](https://github.com/I-want-pizza/QWality/blob/88be92d58178c8b91e3ab7b066cc00c24d141450/docs/teams_score/%D0%A7%D0%B5%D0%BA%D0%BB%D0%B8%D1%81%D1%82%202%20%D1%8D%D1%82%D0%B0%D0%BF.pdf)
 
-### Проверки от других команд
+### Нас проверяли
 1. Этап №1
    1. [Группа 4 команда 1](https://github.com/PublicTransport2025/Docs/blob/fbb74c83b6bf19c2cb6bf589e1f57e42ac8b27f7/%D0%9A%D1%80%D0%BE%D1%81%D1%81-%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B8.pdf)
    2. [Группа 6 команда 3](https://github.com/VisualMusic-VSU/visualmusic/blob/a6c438b225510fb7d536fbe62bfc43634c211a95/docs/check/check.pdf)
@@ -51,3 +51,4 @@
     2. [Группа 6 команда 3](https://github.com/VisualMusic-VSU)
     3. [Группа 6 команда 4](https://github.com/Mixing-Visionary)
     4. [Группа 4 Спец. комада 2](https://github.com/anya-ananasss/Defense-Discover)
+    4. [Группа 5 Спец. комада 3](https://github.com/intrafellow/TechTrackInvest)
