@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
   title: Inspection System API
-  version: 1.1.0
+  version: 1.2.0
 servers:
-  - url: https://api.example.com/v1
+  - url: https://api.qwality.space
 paths:
   /auth/login:
     post:
@@ -58,9 +58,11 @@ paths:
                     type: string
                     description: Сообщение об ошибке
                     example: "Invalid credentials"
-  /auth/reset-password-request:
+  /auth/send-registration-code:
     post:
-      summary: Запрос на восстановление пароля
+      summary: Запрос на отправление email с кодом подтверждения почты
+      tags:
+        - Аутентификация
       requestBody:
         required: true
         content:
@@ -75,6 +77,50 @@ paths:
           description: Письмо отправлено
         '400':
           description: Ошибка обработки запроса
+  /auth/reset-password-request:
+    post:
+      summary: Запрос на восстановление пароля
+      tags:
+        - Аутентификация
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Письмо отправлено
+        '400':
+          description: Ошибка обработки запроса
+  /auth/reset-password-confirm:
+    post:
+      summary: Подтверждение восстановления пароля
+      tags:
+        - Аутентификация
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                code:
+                  type: string
+                  minLength: 6
+                  maxLength: 6
+      responses:
+        '200':
+          description: Пароль обновлён
+        '400':
+          description: Неверный код
   /auth/refresh:
     post:
       summary: Обновление JWT токена
@@ -106,29 +152,6 @@ paths:
                     type: string
                     description: Сообщение об ошибке
                     example: "Token has expired"
-  /auth/reset-password-confirm:
-    post:
-      summary: Подтверждение восстановления пароля
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
-                code:
-                  type: string
-                  minLength: 6
-                  maxLength: 6
-      responses:
-        '200':
-          description: Пароль обновлён
-        '400':
-          description: Неверный код
   /clients:
     post:
       summary: Регистрация нового клиента
@@ -231,19 +254,100 @@ paths:
           description: License purchased
   /users:
     get:
-      summary: Get users list
+      summary: Получить список пользователей
+      description: Возвращает список пользователей, связанных с идентификатором аутентифицированного клиента.
+      tags:
+        - Пользователи
       responses:
         '200':
-          description: List of users
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Уникальный идентификатор пользователя
+                      example: 1
+                    email:
+                      type: string
+                      format: email
+                      description: Электронная почта пользователя
+                      example: user@example.com
+                    role:
+                      type: string
+                      description: Роль пользователя
+                      enum: ["owner", "admin", "moderator", "user" ]
+                      example: admin
+                    color_theme:
+                      type: string
+                      description: Предпочитаемая цветовая тема пользователя
+                      enum: [ "light", "dark"]
+                      example: dark
+                    font_size:
+                      type: string
+                      description: Предпочитаемый размер шрифта пользователя
+                      enum: [ "large", "medium", "small" ]
+                      example: 14
+                  required:
+                    - id
+                    - email
+                    - role
+  /users/me:
+    get:
+      summary: Получить данные текущего пользователя
+      description: Возвращает информацию о текущем пользователе, включая идентификатор, электронную почту, роль, цветовую тему и размер шрифта.
+      tags:
+        - Пользователи
+      responses:
+        '200':
+          description: Данные текущего пользователя
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Уникальный идентификатор пользователя
+                    example: 1
+                  email:
+                    type: string
+                    format: email
+                    description: Электронная почта пользователя
+                    example: user@example.com
+                  role:
+                    type: string
+                    description: Роль пользователя
+                    enum: ["owner", "admin", "moderator", "user"]
+                    example: admin
+                  color_theme:
+                    type: string
+                    description: Предпочитаемая цветовая тема пользователя
+                    enum: ["light", "dark"]
+                    example: dark
+                  font_size:
+                    type: string
+                    description: Предпочитаемый размер шрифта пользователя
+                    enum: ["large", "medium", "small"]
+                    example: medium
   /users/{userId}/role:
     patch:
-      summary: Update user role
+      summary: Обновить роль пользователя
+      description: Обновляет роль указанного пользователя. Требуется идентификатор пользователя в пути и новая роль в теле запроса.
+      operationId: updateUserRole
+      tags:
+        - Пользователи
       parameters:
         - name: userId
           in: path
           required: true
+          description: Уникальный идентификатор пользователя
           schema:
-            type: string
+            type: integer
       requestBody:
         required: true
         content:
@@ -254,24 +358,147 @@ paths:
                 role:
                   type: string
                   enum: [ "admin", "moderator", "user" ]
+                  description: Новая роль пользователя
+                  example: moderator
+              required:
+                - role
       responses:
         '200':
-          description: Role updated
+          description: Роль обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Уникальный идентификатор пользователя
+                    example: 1
+                  email:
+                    type: string
+                    format: email
+                    description: Электронная почта пользователя
+                    example: user@example.com
+                  role:
+                    type: string
+                    description: Роль пользователя
+                    example: moderator
+                required:
+                  - id
+                  - email
+                  - role
+        '400':
+          description: Неверные данные запроса
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: Invalid input
+                required:
+                  - error
+        '403':
+          description: Недостаточно прав
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: Cannot change role of equal or higher user
+                required:
+                  - error
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: User not found
+                required:
+                  - error
   /users/{userId}:
     delete:
-      summary: Delete a user account
+      summary: Удалить учетную запись пользователя
+      description: Удаляет учетную запись пользователя по указанному идентификатору.
+      operationId: deleteUser
+      tags:
+        - Пользователи
       parameters:
         - name: userId
           in: path
           required: true
+          description: Уникальный идентификатор пользователя
           schema:
-            type: string
+            type: integer
       responses:
-        '204':
-          description: User deleted
+        '200':
+          description: Пользователь удален
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Сообщение об успешном удалении
+                    example: User deleted
+                required:
+                  - message
+        '403':
+          description: Недостаточно прав
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: Cannot delete users with this role
+                required:
+                  - error
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: User not found
+                required:
+                  - error
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: An unexpected error occurred
+                required:
+                  - error
   /users/sub-account:
     post:
-      summary: Admin registers a sub-account
+      summary: Создать суб-аккаунт
+      description: Создает суб-аккаунт для пользователя с указанными данными.
+      tags:
+        - Пользователи
       requestBody:
         required: true
         content:
@@ -281,33 +508,136 @@ paths:
               properties:
                 email:
                   type: string
+                  format: email
+                  description: Электронная почта суб-аккаунта
+                  example: subuser@example.com
                 password:
                   type: string
+                  description: Пароль суб-аккаунта (минимум 6 символов)
+                  example: secure123
                 role:
                   type: string
-                color_theme:
-                  type: string
-                  enum: [ "light", "dark" ]
-                font_size:
-                  type: integer
+                  enum: [ "user", "admin", "moderator" ]
+                  description: Роль суб-аккаунта
+                  example: user
+                  default: user
+              required:
+                - email
+                - password
       responses:
         '201':
-          description: Sub-account created
+          description: Суб-аккаунт создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Уникальный идентификатор суб-аккаунта
+                    example: 1
+                  email:
+                    type: string
+                    format: email
+                    description: Электронная почта суб-аккаунта
+                    example: subuser@example.com
+                  role:
+                    type: string
+                    description: Роль суб-аккаунта
+                    example: user
+                required:
+                  - id
+                  - email
+                  - role
+        '400':
+          description: Неверные данные запроса
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: Invalid input
+                required:
+                  - error
+        '403':
+          description: Недостаточно прав
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: you can't create sub-users
+                required:
+                  - error
   /cameras:
     get:
       summary: Получить список камер
+      description: Возвращает список камер, связанных с клиентом.
+      operationId: getCameras
+      tags:
+        - Камеры
       parameters:
         - name: status
           in: query
           required: false
+          description: Фильтр по статусу камеры
           schema:
             type: string
-            enum: [ "active", "inactive", "deleted" ]
+            enum: [ "active", "non-active", "deleted" ]
       responses:
         '200':
           description: Список камер
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Уникальный идентификатор камеры
+                      example: 1
+                    name:
+                      type: string
+                      description: Название камеры
+                      example: Camera 1
+                    camera_url:
+                      type: string
+                      description: URL камеры
+                      example: http://camera.example.com/stream
+                    status:
+                      type: string
+                      description: Статус камеры
+                      example: active
+                    created_at:
+                      type: string
+                      format: date-time
+                      description: Дата и время создания камеры
+                      example: 2025-05-17T17:29:00Z
+        '400':
+          description: Неверные данные запроса
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: Invalid status parameter
     post:
-      summary: Add a new camera
+      summary: Добавить новую камеру
+      description: Создает новую камеру с указанными данными для клиента.
+      operationId: addCamera
+      tags:
+        - Камеры
       requestBody:
         required: true
         content:
@@ -317,14 +647,62 @@ paths:
               properties:
                 name:
                   type: string
+                  description: Название камеры
+                  example: Camera 1
                 camera_url:
                   type: string
+                  description: URL камеры
+                  example: http://camera.example.com/stream
+              required:
+                - name
+                - camera_url
       responses:
         '201':
-          description: Camera added
-  /cameras/{id}/status:
+          description: Камера добавлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Уникальный идентификатор камеры
+                    example: 1
+                  name:
+                    type: string
+                    description: Название камеры
+                    example: Camera 1
+                  status:
+                    type: string
+                    description: Статус камеры
+                    enum: ["active", "non-active", "deleted"]
+                    example: active
+        '400':
+          description: Неверные данные запроса
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: Invalid camera data
+                required:
+                  - error
+  /cameras/{id}:
     patch:
-      summary: Изменить статус камеры
+      summary: Обновить данные камеры
+      description: Обновляет статус и другие параметры камеры по указанному идентификатору.
+      tags:
+        - Камеры
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Уникальный идентификатор камеры
+          schema:
+            type: integer
       requestBody:
         required: true
         content:
@@ -332,24 +710,56 @@ paths:
             schema:
               type: object
               properties:
+                name:
+                  type: string
+                  description: Название камеры
+                  example: Camera 1
+                camera_url:
+                  type: string
+                  description: URL камеры
+                  example: http://camera.example.com/stream
                 status:
                   type: string
-                  enum: [ "active", "inactive", "deleted" ]
+                  enum: [ "active", "non-active", "deleted" ]
+                  description: Статус камеры
+                  example: active
+                deleted_at:
+                  type: string
+                  format: date-time
+                  description: Дата и время удаления камеры
+                  example: 2025-05-17T17:29:00Z
       responses:
         '200':
-          description: Статус обновлён
-        '404':
-          description: Камера не найдена
-  /cameras/{id}:
-    delete:
-      summary: Удалить (пометить как удалённую) камеру
-      responses:
-        '200':
-          description: Камера помечена как удалённая
-  /inspections:
+          description: Камера обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Сообщение об успешном обновлении
+                    example: Camera updated successfully
+                required:
+                  - message
+        '400':
+          description: Неверные данные запроса
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: Invalid camera data
+                required:
+                  - error
+  /inspections/real:
     post:
-      summary: Провести инспекцию
-      description: Эндпоинт для создания новой инспекции с загрузкой изображения
+      summary: (МОЖЕТ НЕ РАБОТАТЬ, ИЩИТЕ /inspections/test) Провести инспекцию продукта
+      description: Создает новую инспекцию продукта с загрузкой изображения для анализа дефектов.
+      operationId: inspectProduct
       tags:
         - Инспекции
       requestBody:
@@ -358,41 +768,101 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              required:
-                - batch_number
-                - inspected_at
-                - camera_name
-                - image
               properties:
                 batch_number:
                   type: string
-                  description: Номер партии
-                  example: "BATCH-001"
-                inspected_at:
-                  type: string
-                  format: date-time
-                  description: Дата и время проведения инспекции
-                  example: "2025-04-29T15:45:00"
-                camera_name:
-                  type: string
-                  description: Название камеры
-                  example: "Main Entrance Camera"
+                  description: Номер партии продукта
+                  example: BATCH-001
+                camera_id:
+                  type: integer
+                  description: Идентификатор камеры
+                  example: 1
                 image:
                   type: string
                   format: binary
-                  description: Изображение для инспекции
+                  description: Изображение продукта для анализа
+              required:
+                - batch_number
+                - camera_id
+                - image
       responses:
-        '200':
-          description: Инспекция успешно создана
+        '201':
+          description: Инспекция успешно проведена
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  message:
+                  inspection_id:
+                    type: integer
+                    description: Уникальный идентификатор инспекции
+                    example: 1
+                  result:
                     type: string
-                    description: Сообщение об успешной операции
-                    example: "Inspection submitted"
+                    description: Результат инспекции
+                    enum: ["defective", "intact"]
+                    example: intact
+                  product_id:
+                    type: integer
+                    description: Уникальный идентификатор продукта
+                    example: 1
+                  camera_id:
+                    type: integer
+                    description: Идентификатор камеры
+                    example: 1
+                  image:
+                    type: string
+                    description: URL изображения, загруженного для инспекции
+                    example: http://minio.example.com/inspection-image.jpg
+                  defects_count:
+                    type: integer
+                    description: Количество обнаруженных дефектов
+                    example: 2
+                  defects:
+                    type: array
+                    description: Список обнаруженных дефектов
+                    items:
+                      type: object
+                      properties:
+                        label:
+                          type: string
+                          description: Метка дефекта
+                          example: scratch
+                        confidence:
+                          type: number
+                          description: Уверенность модели в дефекте
+                          example: 0.95
+                        x:
+                          type: number
+                          description: Координата X ограничивающего прямоугольника
+                          example: 100
+                        y:
+                          type: number
+                          description: Координата Y ограничивающего прямоугольника
+                          example: 150
+                        width:
+                          type: number
+                          description: Ширина ограничивающего прямоугольника
+                          example: 50
+                        height:
+                          type: number
+                          description: Высота ограничивающего прямоугольника
+                          example: 30
+                      required:
+                        - label
+                        - confidence
+                        - x
+                        - y
+                        - width
+                        - height
+                required:
+                  - inspection_id
+                  - result
+                  - product_id
+                  - camera_id
+                  - image
+                  - defects_count
+                  - defects
         '400':
           description: Ошибка при создании инспекции
           content:
@@ -402,17 +872,278 @@ paths:
                 properties:
                   error:
                     type: string
-                    description: Описание ошибки
-                    example: "Invalid image format"
+                    description: Сообщение об ошибке
+                    example: Invalid image format
+                required:
+                  - error
+  /inspections/test:
+    post:
+      summary: (Должна работать) Провести инспекцию продукта
+      description: Создает новую инспекцию продукта БЕЗ загрузки изображения для анализа дефектов,\
+        берёт одно и то же изображение из проекта.
+      tags:
+        - Инспекции
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                batch_number:
+                  type: string
+                  description: Номер партии продукта
+                  example: BATCH-001
+                camera_id:
+                  type: integer
+                  description: Идентификатор камеры
+                  example: 1
+              required:
+                - batch_number
+                - camera_id
+      responses:
+        '201':
+          description: Инспекция успешно проведена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inspection_id:
+                    type: integer
+                    description: Уникальный идентификатор инспекции
+                    example: 1
+                  result:
+                    type: string
+                    description: Результат инспекции
+                    enum: [ "defective", "intact" ]
+                    example: intact
+                  product_id:
+                    type: integer
+                    description: Уникальный идентификатор продукта
+                    example: 1
+                  camera_id:
+                    type: integer
+                    description: Идентификатор камеры
+                    example: 1
+                  image:
+                    type: string
+                    description: URL изображения, загруженного для инспекции
+                    example: http://minio.example.com/inspection-image.jpg
+                  defects_count:
+                    type: integer
+                    description: Количество обнаруженных дефектов
+                    example: 2
+                  defects:
+                    type: array
+                    description: Список обнаруженных дефектов
+                    items:
+                      type: object
+                      properties:
+                        label:
+                          type: string
+                          description: Метка дефекта
+                          example: scratch
+                        confidence:
+                          type: number
+                          description: Уверенность модели в дефекте
+                          example: 0.95
+                        x:
+                          type: number
+                          description: Координата X ограничивающего прямоугольника
+                          example: 100
+                        y:
+                          type: number
+                          description: Координата Y ограничивающего прямоугольника
+                          example: 150
+                        width:
+                          type: number
+                          description: Ширина ограничивающего прямоугольника
+                          example: 50
+                        height:
+                          type: number
+                          description: Высота ограничивающего прямоугольника
+                          example: 30
+                      required:
+                        - label
+                        - confidence
+                        - x
+                        - y
+                        - width
+                        - height
+                required:
+                  - inspection_id
+                  - result
+                  - product_id
+                  - camera_id
+                  - image
+                  - defects_count
+                  - defects
+        '400':
+          description: Ошибка при создании инспекции
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: Invalid image format
+                required:
+                  - error
   /defects:
     get:
-      summary: Get detected defects
+      summary: Получить все обнаруженные дефекты
+      description: Возвращает список камер с их обнаруженными дефектами для текущего клиента.
+      operationId: getAllDefects
+      tags:
+        - Дефекты
       responses:
         '200':
-          description: List of defects
+          description: Список дефектов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    camera_id:
+                      type: integer
+                      description: Уникальный идентификатор камеры
+                      example: 1
+                    defects:
+                      type: array
+                      description: Список дефектов для камеры
+                      items:
+                        type: object
+                        properties:
+                          defect_id:
+                            type: integer
+                            description: Уникальный идентификатор дефекта
+                            example: 1
+                          inspection_id:
+                            type: integer
+                            description: Уникальный идентификатор инспекции
+                            example: 1
+                          product_id:
+                            type: integer
+                            description: Уникальный идентификатор продукта
+                            example: 1
+                          label:
+                            type: string
+                            description: Метка дефекта
+                            example: crack
+                          confidence:
+                            type: number
+                            description: Уверенность модели в дефекте
+                            example: 0.95
+                          timestamp:
+                            type: string
+                            description: Время проведения инспекции
+                            example: "17:29:00 17.05.2025"
+                          download_image_url:
+                            type: string
+                            description: URL для скачивания изображения с дефектом
+                            example: http://minio.example.com/image.jpg?download
+                          uptime:
+                            type: string
+                            description: Время работы камеры с момента первой инспекции
+                            example: "0:00:08"
+                          defect_percent:
+                            type: number
+                            description: Процент дефектных инспекций для камеры
+                            example: 25.5
+                        required:
+                          - defect_id
+                          - inspection_id
+                          - product_id
+                          - label
+                          - confidence
+                          - timestamp
+                          - download_image_url
+                          - uptime
+                          - defect_percent
+                  required:
+                    - camera_id
+                    - defects
+  /defects/camera/{camera_id}:
+    get:
+      summary: Получить дефекты для камеры
+      description: Возвращает список дефектов, связанных с указанной камерой и текущим клиентом.
+      operationId: getCameraDefects
+      tags:
+        - Дефекты
+      parameters:
+        - name: camera_id
+          in: path
+          required: true
+          description: Уникальный идентификатор камеры
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список дефектов для камеры
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    defect_id:
+                      type: integer
+                      description: Уникальный идентификатор дефекта
+                      example: 1
+                    inspection_id:
+                      type: integer
+                      description: Уникальный идентификатор инспекции
+                      example: 1
+                    product_id:
+                      type: integer
+                      description: Уникальный идентификатор продукта
+                      example: 1
+                    label:
+                      type: string
+                      description: Метка дефекта
+                      example: crack
+                    confidence:
+                      type: number
+                      format: float
+                      description: Уверенность модели в дефекте (округлено до двух знаков)
+                      example: 0.99
+                    timestamp:
+                      type: string
+                      description: Время проведения инспекции в формате ЧЧ:ММ:СС ДД.ММ.ГГГГ
+                      example: "14:33:19 17.05.2025"
+                    download_image_url:
+                      type: string
+                      description: URL для скачивания изображения с дефектом
+                      example: http://minio:9000/inspections/63015200-2d06-4c21-b585-41046ec5784b_panel_19.jpg?download
+                    uptime:
+                      type: string
+                      description: Время работы камеры с момента первой инспекции
+                      example: "0:00:08"
+                    defect_percent:
+                      type: number
+                      format: float
+                      description: Процент дефектных инспекций для камеры
+                      example: 100.0
+                  required:
+                    - defect_id
+                    - inspection_id
+                    - product_id
+                    - label
+                    - confidence
+                    - timestamp
+                    - download_image_url
+                    - uptime
+                    - defect_percent
   /ai/config:
     put:
       summary: Update AI defect sensitivity
+      deprecated: true
       requestBody:
         required: true
         content:
@@ -428,6 +1159,7 @@ paths:
   /analytics/export:
     get:
       summary: Export analytics data
+      deprecated: true
       parameters:
         - name: format
           in: query
@@ -441,6 +1173,7 @@ paths:
   /analytics/summary:
     get:
       summary: Получить статистику клиента
+      deprecated: true
       security:
         - bearerAuth: [ ]
       responses:
@@ -449,6 +1182,7 @@ paths:
   /payments/create-session:
     post:
       summary: Создание сессии оплаты
+      deprecated: true
       security:
         - bearerAuth: [ ]
       requestBody:
@@ -479,6 +1213,7 @@ paths:
   /payments/webhook:
     post:
       summary: Обработка уведомления об оплате от FreeKassa
+      deprecated: true
       requestBody:
         required: true
         content:
