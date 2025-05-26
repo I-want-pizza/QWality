@@ -43,6 +43,7 @@
 
 ### Скачать MVP
 * [Релиз 1.0.0](https://github.com/I-want-pizza/QWality/releases/tag/v1.0.0)
+* [Релиз 1.1.0](https://github.com/I-want-pizza/QWality/releases/tag/v1.1.0)
 
 ### Нас проверяли
 1. Этап №1
