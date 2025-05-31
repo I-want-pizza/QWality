@@ -4,6 +4,19 @@ info:
   version: 1.2.0
 servers:
   - url: https://api.qwality.space
+tags:
+  - name: Аутентификация
+    description: Операции, связанные с аутентификацией пользователей
+  - name: Клиенты
+    description: Операции, связанные с управлением клиентами
+  - name: Пользователи
+    description: Операции, связанные с управлением пользователями
+  - name: Камеры
+    description: Управление камерами и связанными операциями, включая корзину
+  - name: Инспекции
+    description: Проведение инспекций и получение результатов
+  - name: Дефекты
+    description: Управление дефектами и связанными операциями, включая корзину
 paths:
   /auth/login:
     post:
@@ -36,27 +49,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  access_token:
-                    type: string
-                    description: JWT access токен
-                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ItCY0LLQsNC9INCf0LXRgtGA0L7QsiIsImlhdCI6MTUxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-                  refresh_token:
-                    type: string
-                    description: JWT refresh токен для обновления access токена
-                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ItCY0LLQsNC9INCf0LXRgtGA0L7QsiIsImlhdCI6MTUxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                $ref: '#/components/schemas/AuthSuccessResponse'
         '401':
           description: Ошибка аутентификации
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Сообщение об ошибке
-                    example: "Invalid credentials"
+                $ref: '#/components/schemas/ErrorResponse'
   /auth/send-registration-code:
     post:
       summary: Запрос на отправление email с кодом подтверждения почты
@@ -69,7 +68,7 @@ paths:
             schema:
               type: object
               properties:
-                email:
+                login:
                   type: string
       responses:
         '200':
@@ -88,7 +87,7 @@ paths:
             schema:
               type: object
               properties:
-                email:
+                login:
                   type: string
       responses:
         '200':
@@ -107,7 +106,7 @@ paths:
             schema:
               type: object
               properties:
-                email:
+                login:
                   type: string
                 password:
                   type: string
@@ -686,71 +685,175 @@ paths:
                     example: Invalid camera data
                 required:
                   - error
-  /cameras/{id}:
-    patch:
-      summary: Обновить данные камеры
-      description: Обновляет статус и другие параметры камеры по указанному идентификатору.
+  /cameras/{cameraId}:
+    get:
       tags:
         - Камеры
+      summary: Получить информацию о камере по ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: Уникальный идентификатор камеры
-          schema:
-            type: integer
+        - $ref: '#/components/parameters/cameraId'
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Информация о камере
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Camera'
+        '404':
+          description: Камера не найдена
+    patch:
+      tags:
+        - Камеры
+      summary: Обновить информацию о камере
+      parameters:
+        - $ref: '#/components/parameters/cameraId'
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: Название камеры
-                  example: Camera 1
-                camera_url:
-                  type: string
-                  description: URL камеры
-                  example: http://camera.example.com/stream
-                status:
-                  type: string
-                  enum: [ "active", "non-active", "deleted" ]
-                  description: Статус камеры
-                  example: active
-                deleted_at:
-                  type: string
-                  format: date-time
-                  description: Дата и время удаления камеры
-                  example: 2025-05-17T17:29:00Z
+              $ref: '#/components/schemas/CameraUpdate'
       responses:
         '200':
-          description: Камера обновлена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Сообщение об успешном обновлении
-                    example: Camera updated successfully
-                required:
-                  - message
+          description: Камера успешно обновлена
         '400':
-          description: Неверные данные запроса
+          description: Неверные данные
+        '403':
+          description: Нет прав
+        '404':
+          description: Камера не найдена
+  /cameras/{cameraId}/soft:
+    delete:
+      tags:
+        - Камеры
+      summary: Переместить камеру в корзину (мягкое удаление)
+      description: Устанавливает статус камеры 'deleted' и заполняет 'deleted_at'. Связанные дефекты не затрагиваются на этом этапе.
+      parameters:
+        - $ref: '#/components/parameters/cameraId'
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Камера перемещена в корзину
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Сообщение об ошибке
-                    example: Invalid camera data
-                required:
-                  - error
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Нет прав на удаление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Камера не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /cameras/{cameraId}/permanently:
+    delete:
+      tags:
+        - Камеры
+      summary: Удалить камеру навсегда (из корзины)
+      description: Полностью удаляет камеру и все связанные с ней сущности (продукты, инспекции, дефекты) из базы данных. Применяется к камерам в корзине со статусом 'deleted'.
+      parameters:
+        - $ref: '#/components/parameters/cameraId'
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Камера и связанные сущности удалены навсегда
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Нет прав на удаление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Камера не найдена (возможно, не в корзине или уже удалена)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /cameras/{cameraId}/restore:
+    patch:
+      tags:
+        - Камеры
+      summary: Восстановить камеру из корзины
+      description: Восстанавливает камеру, ранее перемещенную в корзину (статус 'deleted'), изменяя ее статус на 'active' и очищая 'deleted_at'.
+      parameters:
+        - $ref: '#/components/parameters/cameraId'
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Камера успешно восстановлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Нет прав на восстановление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Камера не найдена в корзине
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /cameras/trash:
+    get:
+      tags:
+        - Камеры
+      summary: Получить список камер в корзине
+      description: Возвращает список камер, которые были мягко удалены (статус 'deleted'). Список может быть пустым, если в корзине нет камер.
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Список камер в корзине (может быть пустым).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Camera'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /inspections/real:
     post:
       summary: (МОЖЕТ НЕ РАБОТАТЬ, ИЩИТЕ /inspections/test) Провести инспекцию продукта
@@ -1136,6 +1239,134 @@ paths:
                     - download_image_url
                     - uptime
                     - defect_percent
+  /defects/{defectId}/soft:
+    delete:
+      tags:
+        - Дефекты
+      summary: Переместить дефект в корзину (мягкое удаление)
+      description: Устанавливает статус дефекта 'deleted'.
+      parameters:
+        - $ref: '#/components/parameters/defectId'
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Дефект перемещен в корзину
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Нет прав на удаление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Дефект не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /defects/{defectId}/permanently:
+    delete:
+      tags:
+        - Дефекты
+      summary: Удалить дефект навсегда (из корзины)
+      description: Полностью удаляет дефект из базы данных. Применяется к дефектам в корзине со статусом 'deleted'.
+      parameters:
+        - $ref: '#/components/parameters/defectId'
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Дефект удален навсегда
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Нет прав на удаление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Дефект не найден (возможно, не в корзине или уже удален)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /defects/{defectId}/restore:
+    patch:
+      tags:
+        - Дефекты
+      summary: Восстановить дефект из корзины
+      description: Восстанавливает дефект, ранее перемещенный в корзину (статус 'deleted'), изменяя его статус на 'active'.
+      parameters:
+        - $ref: '#/components/parameters/defectId'
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Дефект успешно восстановлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Нет прав на восстановление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Дефект не найден в корзине
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /defects/trash:
+    get:
+      tags:
+        - Дефекты
+      summary: Получить список дефектов в корзине
+      description: Возвращает список дефектов, которые были мягко удалены (статус 'deleted'). Список может быть пустым, если в корзине нет дефектов.
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Список дефектов в корзине (может быть пустым).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Defect'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /ai/config:
     put:
       summary: Update AI defect sensitivity
@@ -1230,3 +1461,94 @@ paths:
           description: Успешно обработано (ожидается ответ YES)
         '400':
           description: Ошибка проверки подписи или данных
+
+components:
+  schemas:
+    AuthSuccessResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: JWT access токен
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ItCY0LLQsNC9INCf0LXRgtGA0L7QsiIsImlhdCI6MTUxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        refresh_token:
+          type: string
+          description: JWT refresh токен для обновления access токена
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ItCY0LLQsNC9INCf0LXRgtGA0L7QsiIsImlhdCI6MTUxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Описание ошибки"
+    Camera:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Камера №1"
+        camera_url:
+          type: string
+          example: "rtsp://..."
+        status:
+          type: string
+          example: "active"
+          description: "Текущий статус камеры. Может быть 'active', 'non-active', 'deleted'."
+        created_at:
+          type: string
+          format: date-time
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: "Дата и время мягкого удаления. null, если камера не удалена."
+    CameraUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Новое имя камеры"
+        camera_url:
+          type: string
+          example: "rtsp://new_url"
+    Defect:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 101
+        status:
+          type: string
+          example: "active"
+          description: "Текущий статус дефекта. Может быть 'active', 'deleted'."
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Операция выполнена успешно"
+  parameters:
+    cameraId:
+      name: cameraId
+      in: path
+      required: true
+      description: ID камеры
+      schema:
+        type: integer
+        example: 1
+    defectId:
+      name: defectId
+      in: path
+      required: true
+      description: ID дефекта
+      schema:
+        type: integer
+        example: 101
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
