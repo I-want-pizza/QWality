@@ -846,6 +846,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /cameras/permanently/all:
+    delete:
+      tags:
+        - Камеры
+      summary: Удалить все камеры из корзины
+      description: Удаляет все камеры, находящиеся в корзине
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Камеры успешно удалены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Нет прав на удаление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Клиент не аутентифицирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /cameras/cameraId}/soft-clean:
     post:
       tags:
@@ -1381,7 +1414,7 @@ paths:
       tags:
         - Дефекты
       summary: Удалить дефекты в временном интервале
-      description: Окончательно удаляет дефекты, находящиеся во временном интервале (по дате создания).
+      description: Окончательно удаляет дефекты из корзины, находящиеся во временном интервале (по дате создания).
       parameters:
         - name: start_date
           in: query
@@ -1399,6 +1432,39 @@ paths:
             type: string
             format: date-time
             example: 2025-06-02T13:10:00Z
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Дефекты успешно удалены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Нет прав на удаление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Клиент не аутентифицирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /defects/permanently/all:
+    delete:
+      tags:
+        - Дефекты
+      summary: Удалить все дефекты из корзины
+      description: Окончательно удаляет все дефекты из корзины
       security:
         - BearerAuth: [ ]
       responses:
