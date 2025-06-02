@@ -228,6 +228,96 @@ paths:
                     type: string
                     description: Сообщение об ошибке
                     example: "Invalid or expired verification code"
+  /clients/sensivity:
+    patch:
+      summary: Изменить чувствительность нейросети
+      description: Изменить чувствительность нейросети на переданное значение у данного клиента
+      tags:
+        - Клиенты
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sensivity
+              properties:
+                email:
+                  type: number
+                  format: float
+                  description: Новое значение чувствительности нейросети
+                  example: 0.52
+      responses:
+        '200':
+          description: Чувствительность успешно изменена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Сообщение об успешном изменении
+                    example: "Чувствительность успешно изменена"
+        '400':
+          description: Пользователь не авторизован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Описание ошибки
+                    example: "You aren't authorized"
+        '409':
+          description: Неверно передано значение чувствительности
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: "Sensivity must be between 0 and 1"
+    get:
+      summary: Получить текущую чувствительность нейросети
+      description: Возвращает текущую чувствительность нейросети данного клиента.
+      tags:
+        - Пользователи
+      responses:
+        '200':
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                type: number
+                format: float
+                example: 0.27
+        '400':
+          description: Пользователь не авторизован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Описание ошибки
+                    example: "You aren't authorized"
+        '409':
+          description: Найдено неверное значение чувствительности
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: "Sensivity must be between 0 and 1"
   /licenses:
     get:
       summary: Get available licenses
