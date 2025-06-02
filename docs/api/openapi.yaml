@@ -228,6 +228,97 @@ paths:
                     type: string
                     description: Сообщение об ошибке
                     example: "Invalid or expired verification code"
+  /clients/send-code:
+    delete:
+      summary: Удаление аккаунта (отправить код подтверждения)
+      description: Отправляет код подтверждения для удаления аккаунта на почту
+      tags:
+        - Клиенты
+      responses:
+        '201':
+          description: Код отправлен на почту
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Сообщение об успешной отправке
+                    example: "Код отправлен на почту"
+        '400':
+          description: Ошибка при отправке
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Описание ошибки
+                    example: "Something went wrong"
+        '409':
+          description: Клиент с таким email не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: "Email isn't correct"
+  /clients/confirm:
+    delete:
+      summary: Удаление аккаунта (подтвердить)
+      description: Проверяет код подтверждения с почты для удаления аккаунта
+      tags:
+        - Клиенты
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  description: Код подтверждения с почты
+                  example: 844917
+      responses:
+        '201':
+          description: Код отправлен на почту
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Сообщение об успешном удалении
+                    example: "Аккаунт успешно удалён"
+        '400':
+          description: Ошибка при удалении
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Описание ошибки
+                    example: "Something went wrong"
+        '409':
+          description: Неверный код
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Сообщение об ошибке
+                    example: "Неверный код"
   /clients/sensivity:
     patch:
       summary: Изменить чувствительность нейросети
