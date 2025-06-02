@@ -796,6 +796,96 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /cameras/permanently/range:
+    delete:
+      tags:
+        - Камеры
+      summary: Удалить камеры в временном интервале
+      description: Удаляет камеры, находящиеся во временном интервале (по дате создания).
+      parameters:
+        - name: start_date
+          in: query
+          required: true
+          description: Начальная дата
+          schema:
+            type: string
+            format: date-time
+            example: 2025-06-02T13:10:00Z
+        - name: end_date
+          in: query
+          required: true
+          description: Конечная дата
+          schema:
+            type: string
+            format: date-time
+            example: 2025-06-02T13:10:00Z
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Камеры успешно удалены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Нет прав на удаление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Клиент не аутентифицирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /cameras/cameraId}/soft-clean:
+    post:
+      tags:
+        - Камеры
+      summary: Очистить историю дефектов камеры
+      description: Переносит в корзину все дефекты, принадлежащие этой камере.
+      parameters:
+        - name: camera_id
+          in: path
+          required: true
+          description: ID камеры
+          schema:
+            type: integer
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: История успешно очищена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Нет прав на операцию
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Клиент не аутентифицирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /cameras/{cameraId}/restore:
     patch:
       tags:
@@ -831,32 +921,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /cameras/trash:
-    get:
-      tags:
-        - Камеры
-      summary: Получить список камер в корзине
-      description: Возвращает список камер, которые были мягко удалены (статус 'deleted'). Список может быть пустым, если в корзине нет камер.
-      security:
-        - BearerAuth: [ ]
-      responses:
-        '200':
-          description: Список камер в корзине (может быть пустым).
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Camera'
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   /inspections/real:
     post:
-      summary: (МОЖЕТ НЕ РАБОТАТЬ, ИЩИТЕ /inspections/test) Провести инспекцию продукта
+      summary: Провести инспекцию продукта
       description: Создает новую инспекцию продукта с загрузкой изображения для анализа дефектов.
       operationId: inspectProduct
       tags:
@@ -977,7 +1044,7 @@ paths:
                   - error
   /inspections/test:
     post:
-      summary: (Должна работать) Провести инспекцию продукта
+      summary: Провести тестовую инспекцию продукта
       description: Создает новую инспекцию продукта БЕЗ загрузки изображения для анализа дефектов,\
         берёт одно и то же изображение из проекта.
       tags:
@@ -1309,6 +1376,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /defects/permanently/range:
+    delete:
+      tags:
+        - Дефекты
+      summary: Удалить дефекты в временном интервале
+      description: Окончательно удаляет дефекты, находящиеся во временном интервале (по дате создания).
+      parameters:
+        - name: start_date
+          in: query
+          required: true
+          description: Начальная дата
+          schema:
+            type: string
+            format: date-time
+            example: 2025-06-02T13:10:00Z
+        - name: end_date
+          in: query
+          required: true
+          description: Конечная дата
+          schema:
+            type: string
+            format: date-time
+            example: 2025-06-02T13:10:00Z
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: Дефекты успешно удалены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Нет прав на удаление
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Клиент не аутентифицирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /defects/{defectId}/restore:
     patch:
       tags:
@@ -1338,29 +1455,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /defects/trash:
-    get:
-      tags:
-        - Дефекты
-      summary: Получить список дефектов в корзине
-      description: Возвращает список дефектов, которые были мягко удалены (статус 'deleted'). Список может быть пустым, если в корзине нет дефектов.
-      security:
-        - BearerAuth: [ ]
-      responses:
-        '200':
-          description: Список дефектов в корзине (может быть пустым).
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Defect'
         '500':
           description: Внутренняя ошибка сервера
           content:
