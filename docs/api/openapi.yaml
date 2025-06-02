@@ -421,11 +421,10 @@ paths:
                     description: Предпочитаемый размер шрифта пользователя
                     enum: ["large", "medium", "small"]
                     example: medium
-  /users/{userId}/role:
+  /users/{userId}:
     patch:
-      summary: Обновить роль пользователя
-      description: Обновляет роль указанного пользователя. Требуется идентификатор пользователя в пути и новая роль в теле запроса.
-      operationId: updateUserRole
+      summary: Обновить данные пользователя
+      description: Обновляет данные указанного пользователя.
       tags:
         - Пользователи
       parameters:
@@ -447,11 +446,19 @@ paths:
                   enum: [ "admin", "moderator", "user" ]
                   description: Новая роль пользователя
                   example: moderator
-              required:
-                - role
+                color_theme:
+                  type: string
+                  enum: [ "dark", "light"]
+                  description: Новая цветовая тема пользователя
+                  example: dark
+                font_size:
+                  type: string
+                  enum: [ "large", "medium", "small" ]
+                  description: Новая размер шрифта пользователя
+                  example: medium
       responses:
         '200':
-          description: Роль обновлена
+          description: Данные обновлены
           content:
             application/json:
               schema:
@@ -461,19 +468,30 @@ paths:
                     type: integer
                     description: Уникальный идентификатор пользователя
                     example: 1
-                  email:
+                  login:
                     type: string
-                    format: email
-                    description: Электронная почта пользователя
-                    example: user@example.com
+                    description: Логин пользователя
+                    example: userLogin
                   role:
                     type: string
                     description: Роль пользователя
                     example: moderator
+                  color_theme:
+                    type: string
+                    enum: [ "dark", "light" ]
+                    description: Новая цветовая тема пользователя
+                    example: dark
+                  font_size:
+                    type: string
+                    enum: [ "large", "medium", "small" ]
+                    description: Новая размер шрифта пользователя
+                    example: medium
                 required:
                   - id
                   - email
                   - role
+                  - color_theme
+                  - font_size
         '400':
           description: Неверные данные запроса
           content:
@@ -513,7 +531,6 @@ paths:
                     example: User not found
                 required:
                   - error
-  /users/{userId}:
     delete:
       summary: Удалить учетную запись пользователя
       description: Удаляет учетную запись пользователя по указанному идентификатору.
