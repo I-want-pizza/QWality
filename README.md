@@ -29,9 +29,14 @@
 * Правила коммитов [md](https://github.com/I-want-pizza/QWality/blob/64abc93704140a2072a63c06e43befc4695cb982/docs/git/rules.md)
 * Тестирование:  [Тест-план.pdf](https://github.com/I-want-pizza/QWality/blob/41ffa0948e0f628af94982e651c370220b6fc75a/docs/tests/test_plan.pdf) \ [Тест-кейсы.pdf](https://github.com/I-want-pizza/QWality/blob/41ffa0948e0f628af94982e651c370220b6fc75a/docs/tests/test_cases.pdf)
 * Отчет по тестированию [Таблица проведенных тестов](https://docs.google.com/spreadsheets/d/1EDa98Zzkgsk98eUzoqLCLvc3nHsbRve0hQ1z9zrd1jU/edit?usp=sharing) \ [Отчет по тестированию.pdf](https://github.com/I-want-pizza/QWality/blob/feature/QW-1-update-docs/docs/tests/%D0%9E%D1%82%D1%87%D0%B5%D1%82%20%D0%BF%D0%BE%20%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8E.pdf)
+* Финальный отчет по тестированию [pdf](https://github.com/I-want-pizza/QWality/blob/main/docs/%D0%9E%D1%82%D1%87%D0%B5%D1%82%20%D0%BE%20%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8%20(%D1%84%D0%B8%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9).pdf)
+* Отчет по аналитике [pdf](https://github.com/I-want-pizza/QWality/blob/main/docs/%D0%90%D0%BD%D0%B0%D0%BB%D0%B8%D1%82%D0%B8%D0%BA%D0%B0%20%D0%98%D1%82%D0%BE%D0%B3.pdf)
 * Презентация 2 этапа [Google Presentations](https://docs.google.com/presentation/d/1p-WR1LU2WyGILe2ECDQ_J-1F6IWB20V2gelepvK6XqE/edit?usp=sharing) [pdf](https://github.com/I-want-pizza/QWality/blob/a4a89432033959a738b6f7a08f3fb7fb921581a7/docs/pptx/2_att_presentation.pdf) [pptx](https://github.com/I-want-pizza/QWality/blob/a4a89432033959a738b6f7a08f3fb7fb921581a7/docs/pptx/2_att_presentation.pptx)
 * Ссылки на CI/CD: [Frontend](https://github.com/Grotri/QWalityWeb/actions/workflows/firebase-hosting-merge.yml) \ [Backend](https://github.com/Grotri/QWalityBackend/blob/develop/.github/workflows/autodeploy.yml) 
 * Отчёты ПМ [Папка](https://github.com/I-want-pizza/QWality/tree/main/docs/pm)
+* Roadmap 2.0 [pdf](https://github.com/I-want-pizza/QWality/blob/main/docs/%D0%A0%D0%BE%D0%B0%D0%B4%D0%BC%D0%B0%D0%BF%D0%B0%202.0.pdf)
+* Сопроводительное письмо [pdf](https://github.com/I-want-pizza/QWality/blob/main/docs/%D0%A1%D0%BE%D0%BF%D1%80%D0%BE%D0%B2%D0%BE%D0%B4%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5_%D0%BF%D0%B8%D1%81%D1%8C%D0%BC%D0%BE.pdf)
+* Курсовая работа [pdf](https://github.com/I-want-pizza/QWality/blob/main/docs/%D0%9A%D1%83%D1%80%D1%81%D0%BE%D0%B2%D0%B0%D1%8F%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%20QWality.pdf)
 
 ### Видео
 * [Аттестация №1: видеопрезентация](https://drive.google.com/file/d/1nNROvPLneUcozsotntAM1RbKcGwrNE4F/view?usp=sharing)
@@ -44,6 +49,14 @@
 ### Скачать MVP
 * [Релиз 1.0.0](https://github.com/I-want-pizza/QWality/releases/tag/v1.0.0)
 * [Релиз 1.1.0](https://github.com/I-want-pizza/QWality/releases/tag/v1.1.0)
+* [Релиз 1.2.0](https://github.com/I-want-pizza/QWality/releases/tag/v1.2.0)
+
+### Test Credentials
+* Owner - daria.sushkova@auxo.team:1234567890
+* Administrator - administrator:administrator
+* Moderator - moderator:moderator
+* User - user:useruser
+
 
 ### Нас проверяли
 1. Этап №1
