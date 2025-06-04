@@ -1152,7 +1152,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /inspections/real:
+  /inspections:
     post:
       summary: Провести инспекцию продукта
       description: Создает новую инспекцию продукта с загрузкой изображения для анализа дефектов.
@@ -1198,122 +1198,6 @@ paths:
                     type: string
                     description: Результат инспекции
                     enum: ["defective", "intact"]
-                    example: intact
-                  product_id:
-                    type: integer
-                    description: Уникальный идентификатор продукта
-                    example: 1
-                  camera_id:
-                    type: integer
-                    description: Идентификатор камеры
-                    example: 1
-                  image:
-                    type: string
-                    description: URL изображения, загруженного для инспекции
-                    example: http://minio.example.com/inspection-image.jpg
-                  defects_count:
-                    type: integer
-                    description: Количество обнаруженных дефектов
-                    example: 2
-                  defects:
-                    type: array
-                    description: Список обнаруженных дефектов
-                    items:
-                      type: object
-                      properties:
-                        label:
-                          type: string
-                          description: Метка дефекта
-                          example: scratch
-                        confidence:
-                          type: number
-                          description: Уверенность модели в дефекте
-                          example: 0.95
-                        x:
-                          type: number
-                          description: Координата X ограничивающего прямоугольника
-                          example: 100
-                        y:
-                          type: number
-                          description: Координата Y ограничивающего прямоугольника
-                          example: 150
-                        width:
-                          type: number
-                          description: Ширина ограничивающего прямоугольника
-                          example: 50
-                        height:
-                          type: number
-                          description: Высота ограничивающего прямоугольника
-                          example: 30
-                      required:
-                        - label
-                        - confidence
-                        - x
-                        - y
-                        - width
-                        - height
-                required:
-                  - inspection_id
-                  - result
-                  - product_id
-                  - camera_id
-                  - image
-                  - defects_count
-                  - defects
-        '400':
-          description: Ошибка при создании инспекции
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Сообщение об ошибке
-                    example: Invalid image format
-                required:
-                  - error
-  /inspections/test:
-    post:
-      summary: Провести тестовую инспекцию продукта
-      description: Создает новую инспекцию продукта БЕЗ загрузки изображения для анализа дефектов,\
-        берёт одно и то же изображение из проекта.
-      tags:
-        - Инспекции
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                batch_number:
-                  type: string
-                  description: Номер партии продукта
-                  example: BATCH-001
-                camera_id:
-                  type: integer
-                  description: Идентификатор камеры
-                  example: 1
-              required:
-                - batch_number
-                - camera_id
-      responses:
-        '201':
-          description: Инспекция успешно проведена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  inspection_id:
-                    type: integer
-                    description: Уникальный идентификатор инспекции
-                    example: 1
-                  result:
-                    type: string
-                    description: Результат инспекции
-                    enum: [ "defective", "intact" ]
                     example: intact
                   product_id:
                     type: integer
@@ -1725,100 +1609,163 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /ai/config:
-    put:
-      summary: Update AI defect sensitivity
-      deprecated: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                sensitivity:
-                  type: object
-      responses:
-        '200':
-          description: AI settings updated
-  /analytics/export:
-    get:
-      summary: Export analytics data
-      deprecated: true
+  /export/report:
+    post:
+      summary: Получить отчёт об анализе
+      security:
+        - bearerAuth: [ ]
       parameters:
+        - name: start_date
+          in: query
+          required: true
+          description: Начальная дата
+          schema:
+            type: string
+            format: date-time
+            example: 2025-02-02T13:10:00Z
+        - name: end_date
+          in: query
+          required: true
+          description: Конечная дата
+          schema:
+            type: string
+            format: date-time
+            example: 2025-10-02T13:10:00Z
         - name: format
           in: query
           required: true
+          description: формат ответа
           schema:
             type: string
-            enum: [ "pdf", "excel" ]
+            enum: [ "csv", "pdf" ]
+            example: csv
       responses:
         '200':
-          description: Экспортированный файл
-  /analytics/summary:
-    get:
-      summary: Получить статистику клиента
-      deprecated: true
-      security:
-        - bearerAuth: [ ]
-      responses:
-        '200':
-          description: Сводная статистика
-  /payments/create-session:
+          description: Получение прошло успешно
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Неподдерживаемый формат экспорта
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /export/logs:
     post:
-      summary: Создание сессии оплаты
-      deprecated: true
+      summary: Получить логи о действиях пользователей
       security:
         - bearerAuth: [ ]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                tariff_id:
-                  type: integer
+      parameters:
+        - name: start_date
+          in: query
+          required: true
+          description: Начальная дата
+          schema:
+            type: string
+            format: date-time
+            example: 2025-02-02T13:10:00Z
+        - name: end_date
+          in: query
+          required: true
+          description: Конечная дата
+          schema:
+            type: string
+            format: date-time
+            example: 2025-10-02T13:10:00Z
+        - name: format
+          in: query
+          required: true
+          description: формат ответа
+          schema:
+            type: string
+            enum: [ "csv", "pdf" ]
+            example: pdf
       responses:
-        '201':
-          description: Ссылка на оплату создана
+        '200':
+          description: Получение прошло успешно
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Неподдерживаемый формат экспорта
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Удалить логи о действиях пользователей
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: start_date
+          in: query
+          required: true
+          description: Начальная дата
+          schema:
+            type: string
+            format: date-time
+            example: 2025-02-02T13:10:00Z
+        - name: end_date
+          in: query
+          required: true
+          description: Конечная дата
+          schema:
+            type: string
+            format: date-time
+            example: 2025-10-02T13:10:00Z
+      responses:
+        '200':
+          description: Удаление прошло успешно
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  payment_url:
+                  message:
                     type: string
-                  amount:
+                    description: Описание ответа
+                    example: "Successfully  deleted 15 logs"
+                  deleted_count:
                     type: integer
-        '403':
-          description: Доступ только для владельца
+                    description: Количество удаленных записей
+                    example: 15
         '400':
-          description: Ошибка создания платежа
-  /payments/webhook:
-    post:
-      summary: Обработка уведомления об оплате от FreeKassa
-      deprecated: true
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                MERCHANT_ID:
-                  type: string
-                AMOUNT:
-                  type: string
-                MERCHANT_ORDER_ID:
-                  type: string
-                SIGN:
-                  type: string
-      responses:
-        '200':
-          description: Успешно обработано (ожидается ответ YES)
-        '400':
-          description: Ошибка проверки подписи или данных
+          description: Неправильно введённые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
